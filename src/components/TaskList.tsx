@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { TaskCard } from "./TaskCard"
 
 interface Task {
@@ -17,19 +17,43 @@ interface TaskListProps {
   tasks: Task[]
   title: string
   emptyMessage?: string
+  onToggleComplete?: (id: string) => void
+  showDeleteButton?: boolean
+  onDelete?: (id: string) => void
 }
 
-export function TaskList({ tasks, title, emptyMessage = "No tasks found" }: TaskListProps) {
+export function TaskList({ 
+  tasks, 
+  title, 
+  emptyMessage = "No tasks found",
+  onToggleComplete,
+  showDeleteButton = false,
+  onDelete
+}: TaskListProps) {
   const [taskList, setTaskList] = useState(tasks)
 
+  useEffect(() => {
+    setTaskList(tasks)
+  }, [tasks])
+
   const handleToggleComplete = (id: string) => {
-    setTaskList(prev => 
-      prev.map(task => 
-        task.id === id 
-          ? { ...task, completed: !task.completed }
-          : task
+    if (onToggleComplete) {
+      onToggleComplete(id)
+    } else {
+      setTaskList(prev => 
+        prev.map(task => 
+          task.id === id 
+            ? { ...task, completed: !task.completed }
+            : task
+        )
       )
-    )
+    }
+  }
+
+  const handleDelete = (id: string) => {
+    if (onDelete) {
+      onDelete(id)
+    }
   }
 
   return (
@@ -57,6 +81,8 @@ export function TaskList({ tasks, title, emptyMessage = "No tasks found" }: Task
               key={task.id} 
               task={task} 
               onToggleComplete={handleToggleComplete}
+              showDeleteButton={showDeleteButton}
+              onDelete={handleDelete}
             />
           ))}
         </div>

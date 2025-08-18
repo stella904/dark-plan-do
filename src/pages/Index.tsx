@@ -1,56 +1,24 @@
+import { useState, useEffect } from "react"
 import { TaskList } from "@/components/TaskList"
 import { Layout } from "@/components/Layout"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Calendar, CheckCircle, Clock, Star } from "lucide-react"
-
-// Sample data
-const todayTasks = [
-  {
-    id: "1",
-    title: "Review project proposals",
-    description: "Go through the quarterly project proposals and prepare feedback",
-    completed: false,
-    priority: "high" as const,
-    project: "Work",
-    projectColor: "bg-success",
-    dueDate: "Today",
-    dueTime: "2:00 PM"
-  },
-  {
-    id: "2", 
-    title: "Buy groceries",
-    description: "Milk, eggs, bread, and vegetables for the week",
-    completed: false,
-    priority: "medium" as const,
-    project: "Personal",
-    projectColor: "bg-primary",
-    dueDate: "Today"
-  },
-  {
-    id: "3",
-    title: "Call dentist",
-    description: "Schedule annual checkup appointment",
-    completed: true,
-    priority: "low" as const,
-    project: "Personal", 
-    projectColor: "bg-primary",
-    dueDate: "Today"
-  },
-  {
-    id: "4",
-    title: "Prepare presentation slides",
-    description: "Create slides for Monday's client meeting",
-    completed: false,
-    priority: "high" as const,
-    project: "Work",
-    projectColor: "bg-success",
-    dueDate: "Tomorrow",
-    dueTime: "9:00 AM"
-  }
-]
+import { taskStore } from "@/lib/taskStore"
+import { Task } from "@/types/task"
 
 const Index = () => {
+  const [todayTasks, setTodayTasks] = useState<Task[]>([])
+
+  useEffect(() => {
+    setTodayTasks(taskStore.getTodayTasks())
+  }, [])
+
+  const handleToggleComplete = (id: string) => {
+    taskStore.toggleTaskComplete(id)
+    setTodayTasks(taskStore.getTodayTasks())
+  }
+
   const stats = [
     {
       title: "Total Tasks",
@@ -111,6 +79,7 @@ const Index = () => {
           tasks={todayTasks}
           title="Today's Tasks"
           emptyMessage="No tasks for today. Time to relax! 🎉"
+          onToggleComplete={handleToggleComplete}
         />
       </div>
     </Layout>

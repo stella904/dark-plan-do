@@ -12,6 +12,8 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar"
 import { Button } from "@/components/ui/button"
+import { AddTaskDialog } from "@/components/AddTaskDialog"
+import { taskStore } from "@/lib/taskStore"
 
 const navigationItems = [
   { title: "Today", url: "/", icon: Home },
@@ -20,17 +22,12 @@ const navigationItems = [
   { title: "Completed", url: "/completed", icon: CheckSquare },
 ]
 
-const projects = [
-  { title: "Personal", color: "bg-primary", tasks: 5 },
-  { title: "Work", color: "bg-success", tasks: 8 },
-  { title: "Shopping", color: "bg-destructive", tasks: 3 },
-]
-
 export function AppSidebar() {
   const { state } = useSidebar()
   const collapsed = state === "collapsed"
   const location = useLocation()
   const currentPath = location.pathname
+  const projects = taskStore.getProjects()
 
   const isActive = (path: string) => currentPath === path
   const getNavCls = ({ isActive }: { isActive: boolean }) =>
@@ -55,13 +52,15 @@ export function AppSidebar() {
 
         {/* Add Task Button */}
         <div className="p-4">
-          <Button 
-            variant="primary" 
-            className={`w-full ${collapsed ? "px-2" : ""}`}
-          >
-            <Plus className="h-4 w-4" />
-            {!collapsed && <span className="ml-2">Add Task</span>}
-          </Button>
+          {collapsed ? (
+            <AddTaskDialog>
+              <Button variant="primary" size="icon">
+                <Plus className="h-4 w-4" />
+              </Button>
+            </AddTaskDialog>
+          ) : (
+            <AddTaskDialog />
+          )}
         </div>
 
         {/* Navigation */}
@@ -91,12 +90,12 @@ export function AppSidebar() {
             <SidebarGroupContent>
               <SidebarMenu>
                 {projects.map((project) => (
-                  <SidebarMenuItem key={project.title}>
+                  <SidebarMenuItem key={project.id}>
                     <SidebarMenuButton className="hover:bg-accent/50 text-muted-foreground hover:text-foreground">
                       <div className={`h-3 w-3 rounded-full ${project.color}`} />
-                      <span className="ml-3">{project.title}</span>
+                      <span className="ml-3">{project.name}</span>
                       <span className="ml-auto text-xs bg-muted text-muted-foreground px-2 py-1 rounded-full">
-                        {project.tasks}
+                        {project.taskCount}
                       </span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>

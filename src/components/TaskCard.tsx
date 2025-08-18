@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { CheckCircle2, Circle, Star, Calendar, Clock } from "lucide-react"
+import { CheckCircle2, Circle, Star, Calendar, Clock, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -20,9 +20,11 @@ interface TaskCardProps {
   task: Task
   onToggleComplete: (id: string) => void
   onEdit?: (id: string) => void
+  showDeleteButton?: boolean
+  onDelete?: (id: string) => void
 }
 
-export function TaskCard({ task, onToggleComplete, onEdit }: TaskCardProps) {
+export function TaskCard({ task, onToggleComplete, onEdit, showDeleteButton = false, onDelete }: TaskCardProps) {
   const [isCompleting, setIsCompleting] = useState(false)
 
   const handleToggleComplete = async () => {
@@ -116,6 +118,17 @@ export function TaskCard({ task, onToggleComplete, onEdit }: TaskCardProps) {
             <div className={`h-2 w-2 rounded-full ${getPriorityColor(task.priority)} ml-auto`} />
           </div>
         </div>
+
+        {showDeleteButton && onDelete && (
+          <Button
+            variant="ghost"
+            size="sm"
+            className="p-0 h-6 w-6 rounded-full hover:bg-destructive/20 text-muted-foreground hover:text-destructive"
+            onClick={() => onDelete(task.id)}
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        )}
       </div>
     </Card>
   )
